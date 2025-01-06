@@ -158,6 +158,11 @@ router.post("/api/bookings", auth, async (req, res) => {
 router.get("/api/bookings/fetch/locations", async (req, res) => {
   try {
     const adminId = await getAdminId();
+
+    
+    if (!adminId)
+      return res.send({ error: "Still setting up. Please try again later" });
+
     const branches = await Branch.find({
       admin: adminId,
     }).select("name address opened timeZone");
@@ -310,7 +315,6 @@ router.post("/api/bookings/fetch/available-slots", async (req, res) => {
 
     res.status(200).send({ message: availability });
   } catch (error) {
-    console.error(error);
     res.status(500).send({ error: "Server error" });
   }
 });
@@ -668,7 +672,3 @@ router.post("/api/bookings/validate/coupon-code", auth, async (req, res) => {
 });
 
 module.exports = router;
-
-// corrections
-// No more booking window
-// remember rescheduling notice, can not be more than lead time.

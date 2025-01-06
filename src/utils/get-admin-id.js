@@ -6,6 +6,8 @@ const getAdminId = async () => {
     type: "admin",
   }).select("_id");
 
+  if (!admin) return null;
+
   const id = admin._id;
   return id;
 };

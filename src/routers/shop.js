@@ -13,6 +13,9 @@ router.get("/api/shop/home-page/products/blogs/tests", async (req, res) => {
     // Assume getAdminId retrieves the current admin's ID
     const admin = await getAdminId();
 
+    if (!admin)
+      return res.send({ error: "Still setting up. Please try again later" });
+
     // Fetch the latest three products associated with the admin
     const products = await Product.find({ admin })
       .sort({ createdAt: -1 }) // Sort by creation date, latest first
@@ -32,6 +35,10 @@ router.get("/api/shop/home-page/products/blogs/tests", async (req, res) => {
 router.get("/api/shop/fetch/branches", async (req, res) => {
   try {
     const admin = await getAdminId();
+
+    if (!admin)
+      return res.send({ error: "Still setting up. Please try again later" });
+
     const branches = await Branch.aggregate([
       {
         $match: {
