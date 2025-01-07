@@ -320,7 +320,7 @@ router.post(
   }
 );
 
-router.get("/users/:id/avatar", async (req, res) => {
+router.get("/api/users/:id/avatar", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 

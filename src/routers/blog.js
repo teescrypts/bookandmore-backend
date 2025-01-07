@@ -323,30 +323,6 @@ router.post(
   }
 );
 
-// router.delete("/api/blogs/image", auth, async (req, res) => {
-//   const user = req.user;
-
-//   const eventHandler = async () => {
-//     await BlogImage.deleteMany({ owner: user._id });
-//   };
-
-//   try {
-//     switch (user.type) {
-//       case "admin":
-//         await eventHandler();
-//         break;
-
-//       default:
-//         throw new Error("Invalid Opearation");
-//         break;
-//     }
-
-//     res.status(201).send({ message: "All Images deleted" });
-//   } catch (e) {
-//     res.status(400).send({ error: error.message });
-//   }
-// });
-
 router.delete("/api/blogs/:id/image", auth, async (req, res) => {
   const user = req.user;
 
@@ -381,7 +357,7 @@ router.delete("/api/blogs/:id/image", auth, async (req, res) => {
   }
 });
 
-router.get("/blogs/:id/image", async (req, res) => {
+router.get("/api/blogs/:id/image", async (req, res) => {
   try {
     const blogImage = await BlogImage.findById(req.params.id);
 
@@ -396,7 +372,7 @@ router.get("/blogs/:id/image", async (req, res) => {
   }
 });
 
-router.get("/blogs/image", auth, async (req, res) => {
+router.get("/api/blogs/image", auth, async (req, res) => {
   const user = req.user;
 
   const eventHandler = async () => {

@@ -495,7 +495,7 @@ router.delete("/api/products/:id/image", auth, async (req, res) => {
   }
 });
 
-router.get("/products/:id/image", async (req, res) => {
+router.get("/api/products/:id/image", async (req, res) => {
   try {
     const productImage = await ProductImage.findById(req.params.id);
 
@@ -510,7 +510,7 @@ router.get("/products/:id/image", async (req, res) => {
   }
 });
 
-router.get("/products/image", auth, async (req, res) => {
+router.get("/api/products/image", auth, async (req, res) => {
   const user = req.user;
 
   const eventHandler = async () => {
