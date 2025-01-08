@@ -127,9 +127,11 @@ router.get("/api/products", auth, async (req, res) => {
 
 router.get("/api/products/:id", auth, async (req, res) => {
   const user = req.user;
+  const _id = req.params.id;
 
   const eventHandler = async () => {
-    const product = await Product.findOne({ _id: req.params.id });
+    const product = await Product.findOne({ _id });
+
     if (!product) {
       return res.status(400).send({ error: "Invalid Operation" });
     }
@@ -137,14 +139,14 @@ router.get("/api/products/:id", auth, async (req, res) => {
     const draftImagesRaw = await ProductImage.find({
       owner: user._id,
       status: "draft",
-      product: product._id,
+      product: _id,
     });
 
     let draftImages = [];
 
     if (draftImagesRaw.length > 0) {
       draftImages = draftImagesRaw.map((draftImage) => ({
-        url: `products/${draftImage._id}/image`,
+        url: `${process.env.API_BASE_URL}/api/products/${draftImage._id}/image`,
         imageId: draftImage._id,
         fileName: draftImage.fileName,
       }));
@@ -353,7 +355,7 @@ router.delete("/api/products/:id", auth, async (req, res) => {
 
 const upload = multer({
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
       return cb(new Error("Please upload an image"));
     }
 
@@ -368,6 +370,7 @@ router.post(
   async (req, res) => {
     const user = req.user;
     const body = req.body;
+    const { product } = req.query;
 
     const eventHandler = async () => {
       const buffer = await sharp(req.file.buffer)
@@ -378,10 +381,11 @@ router.post(
         image: buffer,
         owner: user._id,
         fileName: body.fileName,
-        ...(req.query.product && { product: req.query.product }),
+        ...(product && { product }),
       });
 
       const draftImage = await productImage.save();
+
       res.send({
         message: { imageId: draftImage._id, fileName: draftImage.fileName },
       });
@@ -407,7 +411,6 @@ router.post(
           break;
       }
     } catch (e) {
-      console.log(e);
       return res.status(400).send({ error: e.message });
     }
   },
@@ -451,21 +454,30 @@ router.delete("/api/products/image", auth, async (req, res) => {
 
 router.delete("/api/products/:id/image", auth, async (req, res) => {
   const user = req.user;
+  const { product } = req.query;
+  const _id = req.params.id;
 
   const eventHandler = async () => {
-    await ProductImage.findByIdAndDelete({
-      _id: req.params.id,
-    });
+    if (product) {
+      const productObj = await Product.findById(product);
+      const productImages = productObj.images;
 
-    if (req.query?.product) {
-      const product = await Product.findOne({ _id: req.query.product });
-      const productImages = product.images;
-      const newImages = productImages.filter(
-        (img) => img.imageId !== req.params.id
-      );
+      if (productImages.length === 1) {
+        return res.send({
+          error:
+            "To prevent the product from having no image, please add a new image and save before deleting",
+        });
+      }
 
-      product.images = newImages;
-      await product.save();
+      await ProductImage.findByIdAndDelete({ _id });
+      const newImages = productImages.filter((img) => img.imageId !== _id);
+
+      productObj.images = newImages;
+      await productObj.save();
+      res.status(201).send({ message: "Image deleted" });
+    } else {
+      await ProductImage.findByIdAndDelete({ _id });
+      res.status(201).send({ message: "Image deleted" });
     }
   };
 
@@ -488,10 +500,8 @@ router.delete("/api/products/:id/image", auth, async (req, res) => {
         throw new Error("Invalid Opearation");
         break;
     }
-
-    res.status(201).send({ message: "Image deleted" });
   } catch (e) {
-    res.status(400).send({ error: error.message });
+    res.status(400).send({ error: e.message });
   }
 });
 
@@ -510,7 +520,7 @@ router.get("/api/products/:id/image", async (req, res) => {
   }
 });
 
-router.get("/api/products/image", auth, async (req, res) => {
+router.get("/api/products/image/draft", auth, async (req, res) => {
   const user = req.user;
 
   const eventHandler = async () => {
@@ -521,7 +531,7 @@ router.get("/api/products/image", auth, async (req, res) => {
 
     const data = draftImages.map((img) => {
       return {
-        url: `products/${img._id}/image`,
+        url: `${process.env.API_BASE_URL}/api/products/${img._id}/image`,
         fileName: img.fileName,
         imageId: img._id,
       };
@@ -550,7 +560,7 @@ router.get("/api/products/image", auth, async (req, res) => {
         break;
     }
   } catch (e) {
-    res.status(400).send({ error: error.message });
+    res.status(400).send({ error: e.message });
   }
 });
 

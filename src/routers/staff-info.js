@@ -4,6 +4,7 @@ const StaffInfo = require("../models/staff-info");
 const Branch = require("../models/branch");
 const checkPermission = require("../utils/check-permission");
 const User = require("../models/user");
+const StaffForm = require("../models/staff-form");
 const router = new express.Router();
 
 router.get("/api/staff-infos", auth, async (req, res) => {
@@ -17,7 +18,9 @@ router.get("/api/staff-infos", auth, async (req, res) => {
       })
       .select("type commission");
 
-    res.status(201).send({ message: staffInfo });
+    const pendingForms = await StaffForm.countDocuments({ admin, branch });
+
+    res.status(201).send({ message: {staffInfo, pendingForms} });
   };
 
   try {

@@ -43,7 +43,7 @@ router.get("/api/pos/search", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("pos", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 
@@ -89,7 +89,7 @@ router.get("/api/pos/fetch/data", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("pos", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 
@@ -168,7 +168,7 @@ router.post("/api/calculate/tax/pos", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("pos", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 
@@ -248,7 +248,7 @@ router.post("/api/pos/sale", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("pos", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 
@@ -303,7 +303,7 @@ router.get("/api/pos/sale", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("pos", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 

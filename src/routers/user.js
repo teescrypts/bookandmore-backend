@@ -165,6 +165,8 @@ router.get("/api/users-data", auth, async (req, res) => {
           tenant: user._id,
         }).select("paymentStatus status stripeCustomer dueOn");
 
+        console.log(rentStatus)
+
         return res.status(201).send({
           message: {
             activeBranch: tenantBranch._id,
@@ -294,7 +296,7 @@ router.post("/api/users/staffs/account-session", auth, async (req, res) => {
 
 const upload = multer({
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
       return cb(new Error("Please upload an image"));
     }
 

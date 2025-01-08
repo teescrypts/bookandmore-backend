@@ -39,7 +39,7 @@ router.get("/api/orders", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("orders", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 
@@ -52,7 +52,6 @@ router.get("/api/orders", auth, async (req, res) => {
         break;
     }
   } catch (e) {
-    console.log(e);
     return res.status(400).send({ error: e.message });
   }
 });
@@ -91,7 +90,7 @@ router.patch("/api/orders/:id", auth, async (req, res) => {
       }
 
       case "staff": {
-        const isPermitted = await checkPermission("products", user._id);
+        const isPermitted = await checkPermission("orders", user._id);
 
         if (!isPermitted) return res.send({ error: "Invalid Operation" });
 

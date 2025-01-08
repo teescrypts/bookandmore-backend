@@ -180,7 +180,7 @@ router.get("/api/blogs/:id", auth, async (req, res) => {
 });
 
 router.patch("/api/blogs/:id", auth, async (req, res) => {
-  const user = req.user;
+  const user = req.user
 
   const eventHandler = async () => {
     const updates = Object.keys(req.body);
@@ -189,6 +189,7 @@ router.patch("/api/blogs/:id", auth, async (req, res) => {
       "shortDescription",
       "author",
       "content",
+      "estReadTime",
       "coverImage",
     ];
     const isValidOperation = updates.every((update) =>
@@ -246,7 +247,7 @@ router.patch("/api/blogs/:id", auth, async (req, res) => {
 
 const upload = multer({
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
       return cb(new Error("Please upload an image"));
     }
 
@@ -319,6 +320,7 @@ router.post(
     }
   },
   (error, req, res, next) => {
+    console.log(error);
     res.status(400).send({ error: error.message });
   }
 );
@@ -372,7 +374,7 @@ router.get("/api/blogs/:id/image", async (req, res) => {
   }
 });
 
-router.get("/api/blogs/image", auth, async (req, res) => {
+router.get("/api/blogs/image/draft", auth, async (req, res) => {
   const user = req.user;
 
   const eventHandler = async () => {
@@ -387,7 +389,7 @@ router.get("/api/blogs/image", auth, async (req, res) => {
 
     const data = {
       _id: draftImages._id,
-      url: `blogs/${draftImages._id}/image`,
+      url: `${process.env.API_BASE_URL}/api/blogs/${draftImages._id}/image`,
       fileName: draftImages.fileName,
       imageId: draftImages._id,
     };
@@ -417,7 +419,5 @@ router.get("/api/blogs/image", auth, async (req, res) => {
     res.status(400).send({ error: e.message });
   }
 });
-
-
 
 module.exports = router;

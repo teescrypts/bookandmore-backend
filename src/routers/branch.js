@@ -113,10 +113,10 @@ router.get("/api/locations/:id", auth, async (req, res) => {
 router.patch("/api/locations/:id/name-address", auth, async (req, res) => {
   const user = req.user;
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "address timeZone"];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+  const allowedUpdates = ["name", "address", "timeZone"];
+  const isValidOperation = updates.every((update) => {
+    return allowedUpdates.includes(update);
+  });
 
   if (!isValidOperation) {
     return res.status(400).send({ error: "Invalid updates!" });

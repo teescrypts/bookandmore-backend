@@ -142,8 +142,6 @@ router.post("/api/checkout/appointment/payment", auth, async (req, res) => {
       amount = price.total;
     }
 
-    console.log(appointment.service);
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency: "usd",
