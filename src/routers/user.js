@@ -165,7 +165,7 @@ router.get("/api/users-data", auth, async (req, res) => {
           tenant: user._id,
         }).select("paymentStatus status stripeCustomer dueOn");
 
-        console.log(rentStatus)
+        console.log(rentStatus);
 
         return res.status(201).send({
           message: {
