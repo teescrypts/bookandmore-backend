@@ -159,7 +159,6 @@ router.get("/api/bookings/fetch/locations", async (req, res) => {
   try {
     const adminId = await getAdminId();
 
-    
     if (!adminId)
       return res.send({ error: "Still setting up. Please try again later" });
 
@@ -587,7 +586,7 @@ router.post("/api/bookings/validate/coupon-code", auth, async (req, res) => {
       active: true,
     }).populate({
       path: "coupon",
-      select: "expiresAt valueType value addedServices",
+      select: "expiresAt valueType value addedServices stripeData",
     });
 
     if (!promotionCode) {
@@ -631,7 +630,7 @@ router.post("/api/bookings/validate/coupon-code", auth, async (req, res) => {
     // Check if the coupon has expired
     const coupon = promotionCode.coupon;
     const stripeCoupon = await stripe.coupons.retrieve(
-      coupon.stripeData.coupondId
+      coupon.stripeData.couponId
     );
 
     if (!stripeCoupon) return res.send({ error: "Invalid Coupon" });
@@ -667,6 +666,7 @@ router.post("/api/bookings/validate/coupon-code", auth, async (req, res) => {
       message: { discount, coupondId: coupon._id },
     });
   } catch (e) {
+    // console.log(e);
     return res.status(400).send({ error: e.message });
   }
 });
